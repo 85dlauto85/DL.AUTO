@@ -45,14 +45,14 @@
 
       <div class="mb-6">
         <label class="block text-sm font-medium mb-2 text-argent">Prix, €</label>
-        <input type="number" id="priceFrom" placeholder="Prix min (€)" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white mb-2 focus:border-yellow-500 transition" value="0">
-        <input type="number" id="priceTo" placeholder="Prix max (€)" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white focus:border-yellow-500 transition">
+        <input type="number" id="priceFrom" placeholder="Prix min (€)" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white mb-2 focus:border-yellow-500 transition" min="0">
+        <input type="number" id="priceTo" placeholder="Prix max (€)" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white focus:border-yellow-500 transition" min="0">
       </div>
 
       <div class="mb-6">
         <label class="block text-sm font-medium mb-2 text-argent">Année</label>
-        <input type="number" id="yearFrom" placeholder="Année min" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white mb-2 focus:border-yellow-500 transition" value="2000">
-        <input type="number" id="yearTo" placeholder="Année max" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white focus:border-yellow-500 transition">
+        <input type="number" id="yearFrom" placeholder="Année min" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white mb-2 focus:border-yellow-500 transition" min="1900" max="2025">
+        <input type="number" id="yearTo" placeholder="Année max" class="w-full bg-gray-800 border-2 border-jaune p-3 rounded-lg text-white focus:border-yellow-500 transition" min="1900" max="2025">
       </div>
 
       <button onclick="applyFilters()" class="w-full bg-jaune text-black py-3 rounded-lg font-bold hover:bg-yellow-500 transition">
@@ -63,7 +63,7 @@
       </button>
     </aside>
 
-    <!-- Grille des voitures (покажет только HYUNDAI) -->
+    <!-- Grille des voitures -->
     <main class="flex-1">
       <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold text-argent">🚗 Catalogue des véhicules</h1>
@@ -78,138 +78,8 @@
     </main>
   </div>
 
-  <script>
-    // ОДНА МАШИНА - HYUNDAI
-    const cars = [
-      {
-        id: "001",
-        make: "Hyundai",
-        model: "Getz",
-        year: 2006,
-        price: 3990,
-        mileage: 218000,
-        city: "Paris",
-        engine: "1.5 diesel",
-        transmission: "mécanique",
-        body: "citadine",
-        color: "noir",
-        description: "Excellent état, bien entretenu, carnet d'entretien complet.",
-        photos: [
-          "images/Hyundai-Getz-2006/1.jpg",
-          "images/Hyundai-Getz-2006/2.jpg",
-          "images/Hyundai-Getz-2006/3.jpg",
-          "images/Hyundai-Getz-2006/4.jpg",
-          "images/Hyundai-Getz-2006/5.jpg"
-        ],
-        contactPhone: "+33 6 12 34 56 78",
-        contactWhatsApp: "33612345678"
-      }
-    ];
-
-    let filteredCars = [...cars];
-
-    window.onload = function() {
-      renderFilters();
-      checkURLParams();
-      renderCars();
-    };
-
-    function renderFilters() {
-      const makes = [...new Set(cars.map(car => car.make))].sort();
-      const select = document.getElementById('filterMake');
-      makes.forEach(make => {
-        select.innerHTML += `<option value="${make}">${make}</option>`;
-      });
-    }
-
-    function checkURLParams() {
-      const params = new URLSearchParams(window.location.search);
-      const search = params.get('search');
-      const make = params.get('make');
-      
-      if (search) {
-        filteredCars = cars.filter(car => 
-          car.make.toLowerCase().includes(search.toLowerCase()) ||
-          car.model.toLowerCase().includes(search.toLowerCase())
-        );
-        document.getElementById('mainSearch')?.setAttribute('value', search);
-      } else if (make) {
-        filteredCars = cars.filter(car => car.make === make);
-        document.getElementById('filterMake').value = make;
-      }
-    }
-
-    function renderCars(carsToShow = filteredCars) {
-      const grid = document.getElementById('carsGrid');
-      const count = document.getElementById('resultsCount');
-      const noResults = document.getElementById('noResults');
-      
-      if (filteredCars.length === 0) {
-        grid.style.display = 'none';
-        noResults.classList.remove('hidden');
-      } else {
-        grid.style.display = 'grid';
-        noResults.classList.add('hidden');
-        grid.innerHTML = carsToShow.map(car => `
-          <div class="bg-black rounded-lg shadow-lg hover:shadow-yellow-500/25 transition border border-jaune">
-            <img src="${car.photos[0]}" class="w-full h-48 object-cover rounded-t-lg border-b border-jaune">
-            <div class="p-4">
-              <h3 class="font-bold text-xl text-argent mb-2">${car.make} ${car.model}</h3>
-              <p class="text-gray-400">${car.year} • ${car.mileage.toLocaleString()} km</p>
-              <p class="text-2xl font-bold text-jaune mt-2">${car.price.toLocaleString()} €</p>
-              <p class="text-sm text-gray-500">📍 ${car.city}</p>
-              <a href="car.html?id=${car.id}" class="block mt-4 bg-jaune text-black text-center py-2 rounded-lg font-bold hover:bg-yellow-500 transition">
-                Détails →
-              </a>
-            </div>
-          </div>
-        `).join('');
-      }
-      
-      count.textContent = `Trouvé: ${filteredCars.length} véhicule(s)`;
-    }
-
-    function applyFilters() {
-      const make = document.getElementById('filterMake').value;
-      const priceFrom = document.getElementById('priceFrom').value;
-      const priceTo = document.getElementById('priceTo').value;
-      const yearFrom = document.getElementById('yearFrom').value;
-      const yearTo = document.getElementById('yearTo').value;
-      
-      filteredCars = cars.filter(car => {
-        if (make && car.make !== make) return false;
-        if (priceFrom && car.price < +priceFrom) return false;
-        if (priceTo && car.price > +priceTo) return false;
-        if (yearFrom && car.year < +yearFrom) return false;
-        if (yearTo && car.year > +yearTo) return false;
-        return true;
-      });
-      
-      renderCars();
-    }
-
-    function resetFilters() {
-      document.getElementById('filterMake').value = '';
-      document.getElementById('priceFrom').value = '';
-      document.getElementById('priceTo').value = '';
-      document.getElementById('yearFrom').value = '';
-      document.getElementById('yearTo').value = '';
-      filteredCars = [...cars];
-      renderCars();
-    }
-
-    function quickSearch() {
-      const query = document.getElementById('mainSearch').value;
-      if (query.trim()) {
-        window.location.href = `catalog.html?search=${encodeURIComponent(query)}`;
-      } else {
-        window.location.href = 'catalog.html';
-      }
-    }
-
-    function filterByBrand(brand) {
-      window.location.href = `catalog.html?make=${encodeURIComponent(brand)}`;
-    }
-  </script>
+  <!-- Подключаем скрипты -->
+  <script src="data.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

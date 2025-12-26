@@ -29,6 +29,7 @@
       width: 100%;
       height: 100%;
       background-color: rgba(0,0,0,0.95);
+      cursor: pointer;
     }
     .lightbox-content {
       position: absolute;
@@ -39,6 +40,7 @@
       max-height: 90%;
       border: 3px solid #FFD700;
       border-radius: 8px;
+      pointer-events: none; /* Чтобы клик по фото не закрывал лайтбокс */
     }
     .lightbox-close {
       position: absolute;
@@ -48,6 +50,7 @@
       color: #FFD700;
       cursor: pointer;
       font-weight: bold;
+      pointer-events: all;
     }
     .lightbox-prev, .lightbox-next {
       position: absolute;
@@ -60,6 +63,7 @@
       background: rgba(0,0,0,0.5);
       border-radius: 50%;
       transform: translateY(-50%);
+      pointer-events: all;
     }
     .lightbox-prev { left: 20px; }
     .lightbox-next { right: 20px; }
@@ -86,80 +90,11 @@
     <span class="lightbox-close" onclick="closeGallery()">&times;</span>
     <span class="lightbox-prev" onclick="changePhoto(-1)">&#10094;</span>
     <span class="lightbox-next" onclick="changePhoto(1)">&#10095;</span>
-    <img id="lightbox-img" class="lightbox-content">
+    <img id="lightbox-img" class="lightbox-content" onclick="event.stopPropagation()">
   </div>
 
-  <script>
-    const cars = [
-      {
-        id: "001",
-        make: "Hyundai",
-        model: "Getz",
-        year: 2006,
-        price: 3990,
-        mileage: 218000,
-        city: "Paris",
-        engine: "1.5 diesel",
-        transmission: "mécanique",
-        body: "citadine",
-        color: "noir",
-        description: "Excellent état, bien entretenu, carnet d'entretien complet. Économique, idéal pour la ville.",
-        photos: [
-          "images/Hyundai-Getz-2006/1.jpg",
-          "images/Hyundai-Getz-2006/2.jpg",
-          "images/Hyundai-Getz-2006/3.jpg",
-          "images/Hyundai-Getz-2006/4.jpg",
-          "images/Hyundai-Getz-2006/5.jpg"
-        ],
-        contactPhone: "+33 6 12 34 56 78",
-        contactWhatsApp: "33612345678"
-      }
-    ];
-
-    let currentPhotoIndex = 0;
-    let currentPhotos = [];
-
-    window.onload = function() {
-      const params = new URLSearchParams(window.location.search);
-      const carId = params.get('id');
-      const car = cars.find(c => c.id === carId);
-      
-      if (car) {
-        renderCar(car);
-      } else {
-        document.getElementById('carDetail').innerHTML = `
-          <div class="text-center py-20">
-            <div class="text-6xl mb-4">😔</div>
-            <h2 class="text-3xl font-bold mb-4">Véhicule non trouvé</h2>
-            <a href="catalog.html" class="bg-jaune text-black px-6 py-3 rounded-lg font-bold">Retour au catalogue</a>
-          </div>
-        `;
-      }
-    };
-
-    function renderCar(car) {
-      const container = document.getElementById('carDetail');
-      container.innerHTML = `
-        <!-- Галерея -->
-        <div class="bg-black rounded-lg shadow-lg mb-8 border border-jaune">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 p-4" id="gallery">
-            ${car.photos.map((photo, index) => `
-              <img src="${photo}" class="w-full h-64 object-cover rounded-lg cursor-pointer hover:opacity-90 transition border border-jaune" onclick="openGallery(${index})">
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Информация -->
-        <div class="bg-black rounded-lg shadow-lg p-6 mb-8 border border-jaune">
-          <div class="flex justify-between items-start mb-6">
-            <h1 class="text-4xl font-bold text-argent">${car.make} ${car.model}</h1>
-            <span class="bg-jaune text-black px-3 py-1 rounded-full font-bold">${car.year}</span>
-          </div>
-          
-          <div class="text-4xl font-bold text-jaune mb-6">${car.price.toLocaleString()} €</div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-            <div>
-              <h3 class="text-xl font-bold mb-4 text-argent">📝 Caractéristiques</h3>
-              <table class="w-full text-gray-300">
-                <tr class="border-b border-gray
+  <!-- Подключаем скрипты -->
+  <script src="data.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
